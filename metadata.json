@@ -1,0 +1,6 @@
+{
+  "name": "臨床教師取證(初階)小幫手",
+  "description": "根據教師培育中心作業辦法，自動計算初次或延展認證所需的時數與課程類別。",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
