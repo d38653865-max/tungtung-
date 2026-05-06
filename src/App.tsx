@@ -71,12 +71,15 @@ export default function App() {
   const [expiryDate, setExpiryDate] = useState<string>('');
   const [type, setType] = useState<CertType>('initial');
   const [result, setResult] = useState<Rule | null>(null);
+  const [errorStatus, setErrorStatus] = useState<string | null>(null);
 
   const selectedProfession = PROFESSIONS.find(p => p.id === professionId);
 
   const handleCalculate = () => {
+    setErrorStatus(null);
+
     if (!expiryDate) {
-      alert('請輸入日期');
+      setErrorStatus('請輸入日期');
       return;
     }
     
@@ -84,12 +87,12 @@ export default function App() {
     if (!hasCertificate || type === 'initial') {
       const years = parseFloat(seniority);
       if (isNaN(years)) {
-        alert('請輸入專業年資');
+        setErrorStatus('請輸入專業年資');
         return;
       }
       
       if (selectedProfession && years < selectedProfession.minYears) {
-        alert('無法申請');
+        setErrorStatus('無法申請');
         // We still let them see the hours, but seniority is important
       }
     }
@@ -123,6 +126,23 @@ export default function App() {
 
         {/* Form */}
         <div className="p-8 space-y-6">
+          {/* Custom Notification for Errors */}
+          <AnimatePresence>
+            {errorStatus && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                className="bg-rose-50 border border-rose-100 p-4 rounded-2xl flex items-center gap-3 text-rose-600 shadow-sm"
+              >
+                <div className="bg-rose-100 p-1.5 rounded-xl">
+                  <Info className="w-4 h-4" />
+                </div>
+                <span className="font-black text-sm tracking-tight">{errorStatus}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label htmlFor="profession" className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">
@@ -131,8 +151,11 @@ export default function App() {
               <select
                 id="profession"
                 value={professionId}
-                onChange={(e) => setProfessionId(e.target.value)}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all text-sm font-medium text-slate-700 appearance-none cursor-pointer"
+                onChange={(e) => {
+                  setProfessionId(e.target.value);
+                  setErrorStatus(null);
+                }}
+                className="w-full p-4 bg-[#f8f9f8] border border-[#e2e8e4] rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand transition-all text-sm font-bold text-slate-600 appearance-none cursor-pointer"
               >
                 {PROFESSIONS.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
@@ -149,22 +172,25 @@ export default function App() {
                 step="0.1"
                 placeholder="例如: 2.5"
                 value={seniority}
-                onChange={(e) => setSeniority(e.target.value)}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all font-medium text-slate-700"
+                onChange={(e) => {
+                  setSeniority(e.target.value);
+                  setErrorStatus(null);
+                }}
+                className="w-full p-4 bg-[#f8f9f8] border border-[#e2e8e4] rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand transition-all font-bold text-slate-600"
               />
             </div>
           </div>
 
           <div className="space-y-3">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">是否已持有臨床教師證？</label>
-            <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-2xl">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">是否已持有臨床教師證？</label>
+            <div className="grid grid-cols-2 gap-2 bg-[#f0f2f0] p-1.5 rounded-2xl">
               <button
                 id="has-cert-yes"
                 onClick={() => handleCertificateToggle(true)}
-                className={`py-3 px-4 rounded-xl text-sm font-bold transition-all ${
+                className={`py-3 px-4 rounded-xl text-xs font-black transition-all ${
                   hasCertificate
-                    ? 'bg-white text-brand shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700'
+                    ? 'bg-white text-brand shadow-md shadow-brand/5'
+                    : 'text-slate-400 hover:text-brand-dark'
                 }`}
               >
                 已取得
@@ -172,10 +198,10 @@ export default function App() {
               <button
                 id="has-cert-no"
                 onClick={() => handleCertificateToggle(false)}
-                className={`py-3 px-4 rounded-xl text-sm font-bold transition-all ${
+                className={`py-3 px-4 rounded-xl text-xs font-black transition-all ${
                   !hasCertificate
-                    ? 'bg-white text-brand shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700'
+                    ? 'bg-white text-brand shadow-md shadow-brand/5'
+                    : 'text-slate-400 hover:text-brand-dark'
                 }`}
               >
                 尚未取得
@@ -202,31 +228,31 @@ export default function App() {
               animate={{ opacity: 1, height: 'auto' }}
               className="space-y-3 overflow-hidden"
             >
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">認證類別</label>
-              <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-2xl">
-                <button
-                  id="type-initial"
-                  onClick={() => setType('initial')}
-                  className={`py-3 px-4 rounded-xl text-sm font-bold transition-all ${
-                    type === 'initial'
-                      ? 'bg-white text-brand shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  初次
-                </button>
-                <button
-                  id="type-extension"
-                  onClick={() => setType('extension')}
-                  className={`py-3 px-4 rounded-xl text-sm font-bold transition-all ${
-                    type === 'extension'
-                      ? 'bg-white text-brand shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  展延
-                </button>
-              </div>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">認證類別</label>
+                <div className="grid grid-cols-2 gap-2 bg-[#f0f2f0] p-1.5 rounded-2xl">
+                  <button
+                    id="type-initial"
+                    onClick={() => setType('initial')}
+                    className={`py-3 px-4 rounded-xl text-xs font-black transition-all ${
+                      type === 'initial'
+                        ? 'bg-white text-brand shadow-md shadow-brand/5'
+                        : 'text-slate-400 hover:text-brand-dark'
+                    }`}
+                  >
+                    初次
+                  </button>
+                  <button
+                    id="type-extension"
+                    onClick={() => setType('extension')}
+                    className={`py-3 px-4 rounded-xl text-xs font-black transition-all ${
+                      type === 'extension'
+                        ? 'bg-white text-brand shadow-md shadow-brand/5'
+                        : 'text-slate-400 hover:text-brand-dark'
+                    }`}
+                  >
+                    展延
+                  </button>
+                </div>
             </motion.div>
           )}
 
@@ -240,10 +266,10 @@ export default function App() {
           <button
             id="calc-button"
             onClick={handleCalculate}
-            className="w-full bg-brand hover:bg-brand-dark text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-brand/20 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+            className="w-full bg-morandi-blue hover:bg-[#7a8f9f] text-white font-black py-5 rounded-[2rem] shadow-xl shadow-morandi-blue/20 transition-all flex items-center justify-center gap-3 active:scale-[0.98] group"
           >
-            <Calculator className="w-6 h-6" />
-            <span className="text-lg">計算規範時數</span>
+            <Calculator className="w-6 h-6 group-hover:rotate-12 transition-transform" />
+            <span className="text-base tracking-[0.1em]">計算規範時數</span>
           </button>
 
           {/* Results Area */}
