@@ -107,7 +107,7 @@ export default function App() {
         <div className="bg-brand p-8 text-white">
           <h1 id="app-title" className="text-2xl font-bold flex items-center gap-2">
             <Calendar className="w-6 h-6" />
-            臨床教師取證QQ(初階)小幫手
+            臨床教師取證(初階)小幫手
           </h1>
           <p className="text-white/80 mt-2 text-sm opacity-90">
             教師培育中心作業辦法認證計算
