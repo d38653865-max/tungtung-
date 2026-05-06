@@ -3,9 +3,13 @@
 
 @theme {
   --font-sans: "Inter", "Noto Sans TC", ui-sans-serif, system-ui, sans-serif;
-  --color-brand: #408080;
+  --color-brand: #829c8e; /* Morandi Sage */
+  --color-brand-dark: #6b8275;
+  --color-brand-light: #e9eeeb;
+  --color-morandi-blue: #8a9fb1;
+  --color-morandi-taupe: #a6998a;
 }
 
 body {
-  @apply bg-[#FDF6E3] font-sans antialiased text-gray-800;
+  @apply bg-[#f4f1ee] font-sans antialiased text-[#5a5a5a];
 }

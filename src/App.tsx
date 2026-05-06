@@ -22,19 +22,23 @@ interface Rule {
 }
 
 const PROFESSIONS = [
-  { id: 'md', name: '醫師', minYears: 0 },
-  { id: 'nurse', name: '護理師', minYears: 2 },
-  { id: 'pharma', name: '藥師', minYears: 2 },
-  { id: 'rad', name: '醫事放射師', minYears: 2 },
-  { id: 'lab', name: '醫事檢驗師', minYears: 2 },
-  { id: 'ot', name: '職能治療師', minYears: 2 },
-  { id: 'pt', name: '物理治療師', minYears: 2 },
-  { id: 'cp', name: '臨床心理師', minYears: 2 },
-  { id: 'rt', name: '呼吸治療師', minYears: 2 },
-  { id: 'diet', name: '營養師', minYears: 2 },
-  { id: 'slp', name: '語言治療師', minYears: 2 },
-  { id: 'dental', name: '牙體技術師', minYears: 2 },
-  { id: 'other', name: '其他醫事人員', minYears: 2 },
+  { id: 'md', name: '西醫師', minYears: 0 },
+  { id: 'dentist', name: '牙醫師', minYears: 5 },
+  { id: 'tcm', name: '中醫師', minYears: 7 },
+  { id: 'pharma', name: '藥師', minYears: 4 },
+  { id: 'rad', name: '醫事放射師', minYears: 3 },
+  { id: 'lab', name: '醫事檢驗師', minYears: 4 },
+  { id: 'dental', name: '牙體技術師', minYears: 3 },
+  { id: 'nurse', name: '護理師(含專科護理師)', minYears: 3 },
+  { id: 'diet', name: '營養師', minYears: 4 },
+  { id: 'rt', name: '呼吸治療師', minYears: 3 },
+  { id: 'aud', name: '聽力師', minYears: 3 },
+  { id: 'pt', name: '物理治療師', minYears: 3 },
+  { id: 'ot', name: '職能治療師', minYears: 3 },
+  { id: 'cp', name: '臨床心理師', minYears: 4 },
+  { id: 'counsel', name: '諮商心理師', minYears: 3 },
+  { id: 'slp', name: '語言治療師', minYears: 3 },
+  { id: 'other', name: '其他醫事人員', minYears: 0 },
 ];
 
 const RULES: Record<CertType, Rule> = {
@@ -85,7 +89,7 @@ export default function App() {
       }
       
       if (selectedProfession && years < selectedProfession.minYears) {
-        alert(`依規定，${selectedProfession.name}須具備滿 ${selectedProfession.minYears} 年以上專業服務年資方可申請。`);
+        alert('無法申請');
         // We still let them see the hours, but seniority is important
       }
     }
@@ -102,15 +106,18 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+      <div className="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 overflow-hidden border border-slate-100">
         {/* Header */}
-        <div className="bg-brand p-8 text-white">
-          <h1 id="app-title" className="text-2xl font-bold flex items-center gap-2">
-            <Calendar className="w-6 h-6" />
-            臨床教師取證(初階)小幫手
+        <div className="bg-gradient-to-br from-brand-dark to-brand p-10 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+          <h1 id="app-title" className="text-2xl font-extrabold flex items-center gap-3 tracking-tight">
+            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
+              <Calendar className="w-6 h-6" />
+            </div>
+            臨床教師取證小幫手
           </h1>
-          <p className="text-white/80 mt-2 text-sm opacity-90">
-            教師培育中心作業辦法認證計算
+          <p className="text-brand-light/80 mt-3 text-sm font-medium tracking-wide">
+            童綜合醫院教學部 · 認證計算工具
           </p>
         </div>
 
@@ -118,14 +125,14 @@ export default function App() {
         <div className="p-8 space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor="profession" className="text-sm font-medium text-gray-600 ml-1">
+              <label htmlFor="profession" className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">
                 申請職類
               </label>
               <select
                 id="profession"
                 value={professionId}
                 onChange={(e) => setProfessionId(e.target.value)}
-                className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all text-sm"
+                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all text-sm font-medium text-slate-700 appearance-none cursor-pointer"
               >
                 {PROFESSIONS.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
@@ -133,7 +140,7 @@ export default function App() {
               </select>
             </div>
             <div className="space-y-2">
-              <label htmlFor="seniority" className="text-sm font-medium text-gray-600 ml-1">
+              <label htmlFor="seniority" className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">
                 專業年資 (年)
               </label>
               <input
@@ -143,21 +150,21 @@ export default function App() {
                 placeholder="例如: 2.5"
                 value={seniority}
                 onChange={(e) => setSeniority(e.target.value)}
-                className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all font-medium text-slate-700"
               />
             </div>
           </div>
 
           <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-600 ml-1">是否已持有臨床教師證？</label>
-            <div className="flex bg-gray-100 p-1 rounded-2xl">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">是否已持有臨床教師證？</label>
+            <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-2xl">
               <button
                 id="has-cert-yes"
                 onClick={() => handleCertificateToggle(true)}
-                className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
+                className={`py-3 px-4 rounded-xl text-sm font-bold transition-all ${
                   hasCertificate
                     ? 'bg-white text-brand shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
+                    : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 已取得
@@ -165,10 +172,10 @@ export default function App() {
               <button
                 id="has-cert-no"
                 onClick={() => handleCertificateToggle(false)}
-                className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
+                className={`py-3 px-4 rounded-xl text-sm font-bold transition-all ${
                   !hasCertificate
                     ? 'bg-white text-brand shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
+                    : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 尚未取得
@@ -177,7 +184,7 @@ export default function App() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="expiry-date" className="text-sm font-medium text-gray-600 ml-1">
+            <label htmlFor="expiry-date" className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">
               {hasCertificate ? '現有證書到期日' : '預計申請認證日期'}
             </label>
             <input
@@ -185,7 +192,7 @@ export default function App() {
               type="date"
               value={expiryDate}
               onChange={(e) => setExpiryDate(e.target.value)}
-              className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+              className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all font-medium text-slate-700"
             />
           </div>
 
@@ -195,15 +202,15 @@ export default function App() {
               animate={{ opacity: 1, height: 'auto' }}
               className="space-y-3 overflow-hidden"
             >
-              <label className="text-sm font-medium text-gray-600 ml-1">認證類別</label>
-              <div className="flex bg-gray-100 p-1 rounded-2xl">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">認證類別</label>
+              <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-2xl">
                 <button
                   id="type-initial"
                   onClick={() => setType('initial')}
-                  className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
+                  className={`py-3 px-4 rounded-xl text-sm font-bold transition-all ${
                     type === 'initial'
                       ? 'bg-white text-brand shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
+                      : 'text-slate-500 hover:text-slate-700'
                   }`}
                 >
                   初次
@@ -211,10 +218,10 @@ export default function App() {
                 <button
                   id="type-extension"
                   onClick={() => setType('extension')}
-                  className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
+                  className={`py-3 px-4 rounded-xl text-sm font-bold transition-all ${
                     type === 'extension'
                       ? 'bg-white text-brand shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
+                      : 'text-slate-500 hover:text-slate-700'
                   }`}
                 >
                   展延
@@ -224,19 +231,19 @@ export default function App() {
           )}
 
           {!hasCertificate && (
-            <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-3 flex gap-2">
-              <Info className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" />
-              <p className="text-[11px] text-yellow-700">您目前尚未取證，系統將依據「初次認證」標準進行計算。</p>
+            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex gap-3">
+              <Info className="w-5 h-5 text-amber-600 shrink-0" />
+              <p className="text-xs text-amber-700 font-medium leading-relaxed">您目前尚未取證，系統將自動切換為「初次認證」標準進行計算。</p>
             </div>
           )}
 
           <button
             id="calc-button"
             onClick={handleCalculate}
-            className="w-full bg-brand hover:bg-brand/90 text-white font-bold py-4 rounded-2xl shadow-lg shadow-brand/20 transition-all flex items-center justify-center gap-2 active:scale-95"
+            className="w-full bg-brand hover:bg-brand-dark text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-brand/20 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
           >
-            <Calculator className="w-5 h-5" />
-            開始計算
+            <Calculator className="w-6 h-6" />
+            <span className="text-lg">計算規範時數</span>
           </button>
 
           {/* Results Area */}
@@ -247,86 +254,108 @@ export default function App() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="pt-6 border-t border-dashed border-gray-200"
+                className="pt-6 border-t border-slate-100"
               >
-                <div id="result-container" className="bg-brand/5 border border-brand/10 rounded-2xl p-6 space-y-4">
+                <div id="result-container" className="bg-brand-light/40 border border-brand/5 backdrop-blur-sm rounded-[2.5rem] p-8 space-y-8">
                   <div className="flex justify-between items-center">
-                    <span className="text-brand font-bold text-lg">計算結果</span>
-                    <span className="bg-brand/10 text-brand px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <span className="text-brand-dark font-black text-xl tracking-tight">計算結果</span>
+                    <span className="bg-morandi-blue text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] shadow-md shadow-morandi-blue/20">
                       {type === 'initial' ? '初次認證' : '年度展延'}
                     </span>
                   </div>
 
                   {/* Seniority Warning */}
                   {(!hasCertificate || type === 'initial') && selectedProfession && (
-                    <div className={`p-3 rounded-xl flex gap-2 ${
+                    <div className={`p-5 rounded-[1.8rem] flex gap-4 items-center transition-colors ${
                       (parseFloat(seniority) || 0) < selectedProfession.minYears 
-                        ? 'bg-red-50 border border-red-100 text-red-700' 
-                        : 'bg-green-50 border border-green-100 text-green-700'
+                        ? 'bg-rose-100/50 border border-rose-200 text-rose-700' 
+                        : 'bg-brand/10 border border-brand/20 text-brand-dark'
                     }`}>
                       { (parseFloat(seniority) || 0) < selectedProfession.minYears ? (
                         <>
-                          <Info className="w-4 h-4 shrink-0 mt-0.5" />
-                          <p className="text-xs">資格不足：{selectedProfession.name}申請初次認證須滿 {selectedProfession.minYears} 年資。</p>
+                          <div className="bg-rose-500 text-white p-1.5 rounded-full">
+                            <Info className="w-4 h-4" />
+                          </div>
+                          <p className="text-sm font-extrabold tracking-tight">無法申請：年資未達門檻</p>
                         </>
                       ) : (
                         <>
-                          <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-                          <p className="text-xs">年資符合：已達 {selectedProfession.name}申請門檻 ({selectedProfession.minYears} 年)。</p>
+                          <div className="bg-brand text-white p-1.5 rounded-full">
+                            <CheckCircle2 className="w-4 h-4" />
+                          </div>
+                          <p className="text-sm font-extrabold tracking-tight">資格符合：已達申請年資</p>
                         </>
                       )}
                     </div>
                   )}
 
-                  <div className="space-y-4">
-                    <div className="flex items-baseline gap-2">
-                       <span className="text-3xl font-black text-brand">{result.totalHours}</span>
-                       <span className="text-brand font-medium">總時數 / {result.period}</span>
+                  <div className="space-y-8">
+                    <div className="flex items-baseline gap-4">
+                       <span className="text-6xl font-black text-brand-dark tracking-tighter drop-shadow-sm">{result.totalHours}</span>
+                       <div className="flex flex-col">
+                         <span className="text-brand-dark font-black text-lg leading-none">小時</span>
+                         <span className="text-stone-400 font-bold text-[10px] uppercase tracking-widest">{result.period}</span>
+                       </div>
                     </div>
 
-                    <div className="space-y-3">
-                      <p className="text-xs font-bold text-brand opacity-60 uppercase">重要規範提醒</p>
-                      <div className="flex gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
-                        <div className="space-y-1">
-                          <p className="text-sm font-bold text-gray-700">申請時程提醒</p>
-                          <p className="text-xs text-gray-500 leading-relaxed">
-                            {type === 'extension' && expiryDate ? (() => {
-                              const date = new Date(expiryDate);
-                              const m = date.getMonth() + 1;
-                              const d = date.getDate();
-                              if (m === 6 && d === 30) return '您的證書於 6/30 到期，請於 6/1-6/15 提出申請。';
-                              if (m === 12 && d === 31) return '您的證書於 12/31 到期，請於 12/1-12/15 提出申請。';
-                              return result.applicationReminder;
-                            })() : result.applicationReminder}
-                          </p>
-                        </div>
-                      </div>
+                    <div className="space-y-6">
+                      <div className="group">
+                        <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-4 ml-1 opacity-60">規則明細與提醒</p>
+                        
+                        <div className="space-y-4">
+                          <div className="bg-white/60 p-5 rounded-[2rem] border border-white/40 shadow-sm flex gap-4 transition-transform hover:scale-[1.02]">
+                            <div className="w-12 h-12 bg-amber-100/80 rounded-[1.2rem] flex items-center justify-center shrink-0">
+                               <Calendar className="w-6 h-6 text-amber-600" />
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-sm font-black text-stone-700">申請時程</p>
+                              <p className="text-xs text-stone-500 leading-relaxed font-bold">
+                                {type === 'extension' && expiryDate ? (() => {
+                                  const date = new Date(expiryDate);
+                                  const m = date.getMonth() + 1;
+                                  const d = date.getDate();
+                                  if (m === 6 && d === 30) return '證書於 6/30 到期，請於 6/1-6/15 前往中心。';
+                                  if (m === 12 && d === 31) return '證書於 12/31 到期，請於 12/1-12/15 前往中心。';
+                                  return result.applicationReminder;
+                                })() : result.applicationReminder}
+                              </p>
+                            </div>
+                          </div>
 
-                      <p className="text-xs font-bold text-brand opacity-60 uppercase pt-2">必修類別明細</p>
-                      {result.mandatory.map((m, idx) => (
-                        <div key={idx} className="flex gap-3">
-                          <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
-                          <div className="space-y-1">
-                            <p className="text-sm font-bold text-gray-700">{m.label}: {m.hours} 小時</p>
-                            {m.details && <p className="text-xs text-gray-500 leading-relaxed">{m.details}</p>}
+                          {result.mandatory.map((m, idx) => (
+                            <div key={idx} className="bg-white/60 p-5 rounded-[2rem] border border-white/40 shadow-sm flex gap-4 transition-transform hover:scale-[1.02]">
+                              <div className="w-12 h-12 bg-brand/10 rounded-[1.2rem] flex items-center justify-center shrink-0">
+                                 <CheckCircle2 className="w-6 h-6 text-brand-dark" />
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm font-black text-stone-700">{m.label}: {m.hours} 小時</p>
+                                {m.details && <p className="text-xs text-stone-500 leading-relaxed font-bold">{m.details}</p>}
+                              </div>
+                            </div>
+                          ))}
+                          
+                          <div className="bg-white/60 p-5 rounded-[2rem] border border-white/40 shadow-sm flex gap-4 transition-transform hover:scale-[1.02]">
+                            <div className="w-12 h-12 bg-morandi-blue/10 rounded-[1.2rem] flex items-center justify-center shrink-0">
+                               <Info className="w-6 h-6 text-morandi-blue" />
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-sm font-black text-stone-700">選修項目</p>
+                              <p className="text-xs text-stone-500 leading-relaxed font-bold">{result.electiveLabel}</p>
+                            </div>
                           </div>
                         </div>
-                      ))}
-                      
-                      <div className="flex gap-3 pt-2">
-                        <Info className="w-5 h-5 text-brand/60 shrink-0 mt-0.5" />
-                        <div className="space-y-1">
-                          <p className="text-sm font-bold text-gray-700">選修項目</p>
-                          <p className="text-xs text-gray-500 leading-relaxed">{result.electiveLabel}</p>
-                        </div>
                       </div>
                     </div>
 
-                    <div className="pt-4 mt-2 border-t border-brand/10 flex items-center justify-between">
-                      <p className="text-[10px] text-brand/60">時數計算基準日：{expiryDate}</p>
-                      <div className="flex items-center gap-1 text-[10px] text-brand font-bold">
-                        詳細規範請參閱作業辦法 <ChevronRight className="w-3 h-3" />
+                    <div className="pt-6 border-t border-brand/10 flex flex-col gap-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+                          <p className="text-[10px] font-bold text-stone-400 italic">計算基準：{expiryDate}</p>
+                        </div>
+                        <button className="text-[11px] font-black text-brand-dark hover:text-brand flex items-center gap-1 transition-colors">
+                          作業辦法詳情 <ChevronRight className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   </div>
