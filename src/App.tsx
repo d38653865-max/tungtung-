@@ -400,6 +400,18 @@ export default function App() {
                               <p className="text-xs text-stone-500 leading-relaxed font-bold">{result.electiveLabel}</p>
                             </div>
                           </div>
+
+                          {type === 'extension' && (
+                            <div className="bg-amber-50/80 p-5 rounded-[2rem] border border-amber-100/50 shadow-sm flex gap-4 transition-transform hover:scale-[1.02]">
+                              <div className="w-12 h-12 bg-amber-100 rounded-[1.2rem] flex items-center justify-center shrink-0">
+                                 <Info className="w-6 h-6 text-amber-600" />
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-sm font-black text-amber-900">展延小提醒</p>
+                                <p className="text-xs text-amber-700 leading-relaxed font-bold">未符合規範僅能改申請初次認證(若還在效期內，最快可於效期屆滿當月15日前申請)。</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
