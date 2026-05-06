@@ -4,13 +4,14 @@
  */
 
 import { useState } from 'react';
-import { Calendar, CheckCircle2, Info, Calculator, ChevronRight } from 'lucide-react';
+import { Calendar, CheckCircle2, Info, Calculator, ChevronRight, FileText, Paperclip, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 type CertType = 'initial' | 'extension';
 
 interface Rule {
   totalHours: number;
+  physicalHours: number;
   period: string;
   mandatory: {
     label: string;
@@ -44,6 +45,7 @@ const PROFESSIONS = [
 const RULES: Record<CertType, Rule> = {
   initial: {
     totalHours: 12,
+    physicalHours: 6,
     period: '2 年內',
     mandatory: [
       { label: '基礎 (1)-(5) 類別', hours: 5, details: '含課程設計、教學技巧、評估技巧、回饋技巧、教材製作 (各至少 1 小時)' },
@@ -55,7 +57,8 @@ const RULES: Record<CertType, Rule> = {
   },
   extension: {
     totalHours: 6,
-    period: '每年 (12 個月)',
+    physicalHours: 3,
+    period: '每年',
     mandatory: [
       { label: '進階 (9) 全人照護', hours: 2, details: '全人照護教學進階課程' }
     ],
@@ -63,6 +66,25 @@ const RULES: Record<CertType, Rule> = {
     applicationReminder: '依到期日：6/30 到期者 6/1-6/15 申請；12/31 到期者 12/1-12/15 申請。'
   }
 };
+
+const ATTACHMENTS = [
+  "7.1 教師培育中心年度訓練計畫",
+  "7.2 ＜課程訓練設計＞",
+  "7.3 ＜講師授課計畫暨教案設計＞",
+  "7.4 ＜教育訓練教材評核表＞",
+  "7.5 ＜講師遴選申請表＞",
+  "7.6 ＜課程執行檢核暨異常紀錄追蹤表＞",
+  "7.7 ＜訓練成果報告暨訓練課程總檢討＞",
+  "7.8 ＜工作輔導記錄單＞",
+  "7.9 ＜教師培育中心臨床教師證申請表＞",
+  "7.10 ＜教學訓練活動表＞",
+  "7.11 ＜課程時數認列申請單＞",
+  "7.12 ＜全人醫療暨跨領域團隊教案＞",
+  "7.13 ＜跨領域團隊教案(IPE) ＞",
+  "7.14 ＜PBL 教案＞",
+  "7.15 ＜全人醫療教學回饋＞",
+  "7.16 ＜全院教師之教學品質評核表＞"
+];
 
 export default function App() {
   const [professionId, setProfessionId] = useState<string>('md');
@@ -72,6 +94,7 @@ export default function App() {
   const [type, setType] = useState<CertType>('initial');
   const [result, setResult] = useState<Rule | null>(null);
   const [errorStatus, setErrorStatus] = useState<string | null>(null);
+  const [showDetails, setShowDetails] = useState<boolean>(false);
 
   const selectedProfession = PROFESSIONS.find(p => p.id === professionId);
 
@@ -82,7 +105,7 @@ export default function App() {
       setErrorStatus('請輸入日期');
       return;
     }
-    
+
     // Validate seniority for initial application
     if (!hasCertificate || type === 'initial') {
       const years = parseFloat(seniority);
@@ -119,8 +142,8 @@ export default function App() {
             </div>
             臨床教師取證小幫手
           </h1>
-          <p className="text-brand-light/80 mt-3 text-sm font-medium tracking-wide">
-            童綜合醫院教學部 · 認證計算工具
+          <p className="text-brand-light/80 mt-3 text-sm font-medium tracking-wide text-center">
+            童綜合醫院教學部 · ( 分機 58047 )
           </p>
         </div>
 
@@ -316,12 +339,20 @@ export default function App() {
                   )}
 
                   <div className="space-y-8">
-                    <div className="flex items-baseline gap-4">
-                       <span className="text-6xl font-black text-brand-dark tracking-tighter drop-shadow-sm">{result.totalHours}</span>
-                       <div className="flex flex-col">
-                         <span className="text-brand-dark font-black text-lg leading-none">小時</span>
-                         <span className="text-stone-400 font-bold text-[10px] uppercase tracking-widest">{result.period}</span>
-                       </div>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-baseline gap-4">
+                         <span className="text-7xl font-black text-brand-dark tracking-tighter drop-shadow-sm">{result.totalHours}</span>
+                         <div className="flex flex-col">
+                           <span className="text-brand-dark font-black text-3xl leading-none">小時</span>
+                           <span className="text-stone-400 font-black text-2xl uppercase tracking-widest mt-1">{result.period}</span>
+                         </div>
+                      </div>
+                      <div className="bg-rose-50 border border-rose-100/50 px-3 py-1.5 rounded-full w-fit flex items-center gap-2 mt-2">
+                        <div className="w-4 h-4 bg-rose-500 rounded-full flex items-center justify-center">
+                          <Info className="w-2.5 h-2.5 text-white" />
+                        </div>
+                        <p className="text-[11px] font-black text-rose-600 tracking-tight">含實體課程至少 {result.physicalHours} 小時</p>
+                      </div>
                     </div>
 
                     <div className="space-y-6">
@@ -340,8 +371,8 @@ export default function App() {
                                   const date = new Date(expiryDate);
                                   const m = date.getMonth() + 1;
                                   const d = date.getDate();
-                                  if (m === 6 && d === 30) return '證書於 6/30 到期，請於 6/1-6/15 前往中心。';
-                                  if (m === 12 && d === 31) return '證書於 12/31 到期，請於 12/1-12/15 前往中心。';
+                                  if (m === 6 && d === 30) return '證書於 6/30 到期，請於 6/1-6/15 送出申請。';
+                                  if (m === 12 && d === 31) return '證書於 12/31 到期，請於 12/1-12/15 送出申請。';
                                   return result.applicationReminder;
                                 })() : result.applicationReminder}
                               </p>
@@ -379,7 +410,10 @@ export default function App() {
                           <div className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
                           <p className="text-[10px] font-bold text-stone-400 italic">計算基準：{expiryDate}</p>
                         </div>
-                        <button className="text-[11px] font-black text-brand-dark hover:text-brand flex items-center gap-1 transition-colors">
+                        <button 
+                          onClick={() => setShowDetails(true)}
+                          className="text-[11px] font-black text-brand-dark hover:text-brand flex items-center gap-1 transition-colors"
+                        >
                           作業辦法詳情 <ChevronRight className="w-4 h-4" />
                         </button>
                       </div>
@@ -387,6 +421,86 @@ export default function App() {
                   </div>
                 </div>
               </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Details Modal */}
+          <AnimatePresence>
+            {showDetails && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setShowDetails(false)}
+                  className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
+                />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                  className="relative w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+                >
+                  <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                    <div className="space-y-1">
+                      <h2 className="text-xl font-black text-brand-dark tracking-tight">附件及作業辦法詳情</h2>
+                      <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">教師培育中心作業辦法 (3865-O-001)</p>
+                    </div>
+                    <button 
+                      onClick={() => setShowDetails(false)}
+                      className="p-3 hover:bg-slate-50 rounded-2xl transition-colors text-slate-400"
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+                  
+                  <div className="p-8 overflow-y-auto space-y-8 scrollbar-hide">
+                    {/* Document Header Info */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-slate-50 p-5 rounded-[1.8rem] space-y-1">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">文件版本</p>
+                        <p className="text-xl font-black text-brand-dark">5.4 版</p>
+                      </div>
+                      <div className="bg-slate-50 p-5 rounded-[1.8rem] space-y-1">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">生效日期</p>
+                        <p className="text-xl font-black text-brand-dark">2026/04/10</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 ml-2">
+                        <div className="w-6 h-6 bg-morandi-blue/10 rounded-lg flex items-center justify-center">
+                          <Paperclip className="w-3.5 h-3.5 text-morandi-blue" />
+                        </div>
+                        <h3 className="text-sm font-black text-stone-700 tracking-tight">相關文件清單 (附件)</h3>
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        {ATTACHMENTS.map((item, index) => (
+                          <div 
+                            key={index} 
+                            className="bg-white group hover:bg-slate-50 border border-slate-100 p-4 rounded-2xl flex items-center gap-4 transition-all cursor-default"
+                          >
+                            <div className="w-10 h-10 bg-slate-50 group-hover:bg-brand/10 rounded-xl flex items-center justify-center shrink-0 transition-colors">
+                              <FileText className="w-5 h-5 text-slate-400 group-hover:text-brand-dark" />
+                            </div>
+                            <p className="text-xs font-bold text-slate-600 leading-snug">{item}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-8 bg-slate-50/50 border-t border-slate-100">
+                    <button 
+                      onClick={() => setShowDetails(false)}
+                      className="w-full bg-brand-dark text-white font-black py-4 rounded-2xl shadow-lg shadow-brand-dark/10 hover:shadow-xl transition-all"
+                    >
+                      我瞭解了
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
             )}
           </AnimatePresence>
         </div>
